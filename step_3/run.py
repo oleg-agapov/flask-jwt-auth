@@ -11,11 +11,13 @@ app.config['SECRET_KEY'] = 'some-secret-string'
 
 db = SQLAlchemy(app)
 
+
 @app.before_first_request
 def create_tables():
     db.create_all()
 
-import views, models, resources
+
+import resources
 
 api.add_resource(resources.UserRegistration, '/registration')
 api.add_resource(resources.UserLogin, '/login')
