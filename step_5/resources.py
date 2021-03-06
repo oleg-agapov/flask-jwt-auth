@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 from models import UserModel, RevokedTokenModel
-from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
+from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt)
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', help = 'This field cannot be blank', required = True)
@@ -53,9 +53,9 @@ class UserLogin(Resource):
 
 
 class UserLogoutAccess(Resource):
-    @jwt_required
+    @jwt_required()
     def post(self):
-        jti = get_raw_jwt()['jti']
+        jti = get_jwt()['jti']
         try:
             revoked_token = RevokedTokenModel(jti = jti)
             revoked_token.add()
@@ -65,9 +65,9 @@ class UserLogoutAccess(Resource):
 
 
 class UserLogoutRefresh(Resource):
-    @jwt_refresh_token_required
+    @jwt_required(refresh=True)
     def post(self):
-        jti = get_raw_jwt()['jti']
+        jti = get_jwt()['jti']
         try:
             revoked_token = RevokedTokenModel(jti = jti)
             revoked_token.add()
@@ -77,7 +77,7 @@ class UserLogoutRefresh(Resource):
 
 
 class TokenRefresh(Resource):
-    @jwt_refresh_token_required
+    @jwt_required(refresh=True)
     def post(self):
         current_user = get_jwt_identity()
         access_token = create_access_token(identity = current_user)
@@ -93,7 +93,7 @@ class AllUsers(Resource):
 
 
 class SecretResource(Resource):
-    @jwt_required
+    @jwt_required()
     def get(self):
         return {
             'answer': 42

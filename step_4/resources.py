@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 from models import UserModel
-from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity)
+from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, get_jwt_identity)
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', help = 'This field cannot be blank', required = True)
@@ -63,7 +63,7 @@ class UserLogoutRefresh(Resource):
 
 
 class TokenRefresh(Resource):
-    @jwt_refresh_token_required
+    @jwt_required(refresh=True)
     def post(self):
         current_user = get_jwt_identity()
         access_token = create_access_token(identity = current_user)
@@ -79,7 +79,7 @@ class AllUsers(Resource):
 
 
 class SecretResource(Resource):
-    @jwt_required
+    @jwt_required()
     def get(self):
         return {
             'answer': 42

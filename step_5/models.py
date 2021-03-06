@@ -52,6 +52,6 @@ class RevokedTokenModel(db.Model):
         db.session.commit()
     
     @classmethod
-    def is_jti_blacklisted(cls, jti):
+    def is_jti_blocklisted(cls, jti):
         query = cls.query.filter_by(jti = jti).first()
         return bool(query)
